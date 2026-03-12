@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="robots" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sacrisoft – Smart Software Solutions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<style>
+html,body{margin:0;padding:0;height:100%;overflow-x:hidden;overflow-y:auto;background:#000000;}
+#bgCanvas,canvas{position:absolute;top:0;left:0;width:100%;height:100%;display:block;filter:blur(3px);}
+
+#overlayLayer{
+  position:fixed; inset:0; z-index:5;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none; padding:24px; box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
+}
+#overlayLayer .overlayWrap{
+  display:flex; flex-direction:column; gap:16px;
+  align-items:center; text-align:center;
+  max-width:min(820px, 92vw);
+}
+.overlayText{
+  font-weight:800; letter-spacing:-0.02em; line-height:1.05;
+  text-shadow:0 10px 30px rgba(0,0,0,0.38);
+  will-change:transform,opacity,filter;
+}
+.overlayCountdown{
+  font-weight:700; letter-spacing:0.02em; line-height:1.15;
+  text-shadow:0 10px 30px rgba(0,0,0,0.38);
+  will-change:transform,opacity,filter;
+}
+.overlayCountdown .cdPrefix{ opacity:0.9; margin-right:0.5em; font-weight:600; letter-spacing:0.03em; }
+.overlayButton{
+  pointer-events:auto;
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:0.9em 1.3em; border-radius:999px; text-decoration:none;
+  font-weight:700; border:1px solid rgba(255,255,255,0.30);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 16px 40px rgba(0,0,0,0.35);
+  position:relative; overflow:hidden; transform:translateZ(0);
+  will-change:transform,opacity,filter;
+}
+.overlayButton.btn-solid{ background:rgba(255,255,255,0.92); color:#111; border-color:rgba(255,255,255,0.0); }
+.overlayButton.btn-outline{ background:rgba(0,0,0,0.25); color:#fff; }
+.overlayButton.btn-glass{ background:rgba(255,255,255,0.14); color:#fff; }
+
+.anim-text-none{ animation:none; }
+.anim-text-float{ animation:ovFloat 4.2s ease-in-out infinite; }
+.anim-text-fadeup{ animation:ovFadeUp 900ms ease-out both; }
+.anim-text-glow{ animation:ovGlow 2.2s ease-in-out infinite; }
+.anim-text-typewriter{
+  overflow:hidden; white-space:nowrap;
+  border-right:3px solid rgba(255,255,255,0.75);
+  animation: ovTyping 2.8s steps(28,end) 1 both, ovCaret 650ms steps(1,end) infinite;
+  max-width:92vw;
+}
+
+
+.anim-text-slidein{ animation:ovSlideIn 900ms cubic-bezier(.2,.9,.25,1) both; }
+.anim-text-zoomin{ animation:ovZoomIn 820ms cubic-bezier(.2,.9,.25,1) both; }
+.anim-text-blurin{ animation:ovBlurIn 900ms ease-out both; }
+.anim-text-reveal{ animation:ovReveal 950ms ease-out both; }
+
+.ov-loop.anim-text-fadeup{ animation:ovFadeUpLoop 1800ms ease-in-out infinite; }
+.ov-loop.anim-text-slidein{ animation:ovSlideInLoop 2200ms ease-in-out infinite; }
+.ov-loop.anim-text-zoomin{ animation:ovZoomInLoop 2100ms ease-in-out infinite; }
+.ov-loop.anim-text-blurin{ animation:ovBlurInLoop 2200ms ease-in-out infinite; }
+.ov-loop.anim-text-reveal{ animation:ovRevealLoop 2400ms ease-in-out infinite; }
+
+.anim-text-typewriter.tw-js{
+  overflow:visible; white-space:pre-line; border-right:none;
+  animation:none; max-width:min(820px, 92vw);
+}
+.anim-text-typewriter.tw-js .tw-caret{
+  display:inline-block; width:0.1em; height:1em; margin-left:0.08em;
+  background:rgba(255,255,255,0.75);
+  vertical-align:-0.1em;
+  animation:ovCaret 650ms steps(1,end) infinite;
+}
+
+.anim-btn-none{ animation:none; }
+.anim-btn-pop{ animation:ovPop 760ms cubic-bezier(.2,.9,.25,1) both; }
+.anim-btn-pulse{ animation:ovPulse 1.8s ease-in-out infinite; }
+.anim-btn-shimmer::before{
+  content:""; position:absolute; inset:-2px; border-radius:inherit;
+  background:linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.35) 40%, rgba(255,255,255,0) 80%);
+  transform:translateX(-120%);
+  animation:ovShimmer 2.2s ease-in-out infinite;
+  pointer-events:none;
+}
+
+
+.anim-btn-slideup{ animation:ovBtnSlideUp 820ms cubic-bezier(.2,.9,.25,1) both; }
+.anim-btn-glow{ animation:ovBtnGlow 1.8s ease-in-out infinite; }
+.anim-btn-wiggle{ animation:ovBtnWiggle 1.2s ease-in-out infinite; }
+.anim-btn-bounce{ animation:ovBtnBounce 1.8s ease-in-out infinite; }
+
+.ov-loop.anim-btn-pop{ animation:ovPopLoop 1900ms ease-in-out infinite; }
+.ov-loop.anim-btn-slideup{ animation:ovBtnSlideUpLoop 2300ms ease-in-out infinite; }
+
+@keyframes ovFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-10px) } }
+@keyframes ovFadeUp{ from{opacity:0; transform:translateY(10px); filter:blur(2px);} to{opacity:1; transform:translateY(0); filter:blur(0);} }
+@keyframes ovGlow{ 0%,100%{ filter:drop-shadow(0 0 0 rgba(255,255,255,0.0)); } 50%{ filter:drop-shadow(0 0 14px rgba(255,255,255,0.55)); } }
+@keyframes ovTyping{ from{ width:0 } to{ width:100% } }
+@keyframes ovCaret{ 50%{ border-color:transparent } }
+@keyframes ovPop{ 0%{opacity:0; transform:translateY(10px) scale(0.96);} 70%{opacity:1; transform:translateY(0) scale(1.02);} 100%{opacity:1; transform:translateY(0) scale(1);} }
+@keyframes ovPulse{ 0%,100%{ transform:scale(1); filter:brightness(1);} 50%{ transform:scale(1.04); filter:brightness(1.12);} }
+@keyframes ovShimmer{ 0%{ transform:translateX(-120%);} 60%{ transform:translateX(120%);} 100%{ transform:translateX(120%);} }
+
+@keyframes ovFadeUpLoop{ 0%,100%{opacity:0; transform:translateY(10px); filter:blur(2px);} 45%{opacity:1; transform:translateY(0); filter:blur(0);} 55%{opacity:1; transform:translateY(0); filter:blur(0);} }
+@keyframes ovSlideIn{ from{opacity:0; transform:translateX(-18px); filter:blur(2px);} to{opacity:1; transform:translateX(0); filter:blur(0);} }
+@keyframes ovSlideInLoop{ 0%,100%{opacity:0; transform:translateX(-18px);} 45%{opacity:1; transform:translateX(0);} 55%{opacity:1; transform:translateX(0);} }
+@keyframes ovZoomIn{ from{opacity:0; transform:scale(0.92); filter:blur(2px);} to{opacity:1; transform:scale(1); filter:blur(0);} }
+@keyframes ovZoomInLoop{ 0%,100%{opacity:0; transform:scale(0.92);} 45%{opacity:1; transform:scale(1);} 55%{opacity:1; transform:scale(1);} }
+@keyframes ovBlurIn{ from{opacity:0; filter:blur(10px); transform:translateY(6px);} to{opacity:1; filter:blur(0); transform:translateY(0);} }
+@keyframes ovBlurInLoop{ 0%,100%{opacity:0; filter:blur(10px); transform:translateY(6px);} 45%{opacity:1; filter:blur(0); transform:translateY(0);} 55%{opacity:1; filter:blur(0); transform:translateY(0);} }
+@keyframes ovReveal{ from{opacity:0; clip-path: inset(0 0 0 100%);} to{opacity:1; clip-path: inset(0 0 0 0);} }
+@keyframes ovRevealLoop{ 0%,100%{opacity:0; clip-path: inset(0 0 0 100%);} 45%{opacity:1; clip-path: inset(0 0 0 0);} 55%{opacity:1; clip-path: inset(0 0 0 0);} }
+@keyframes ovPopLoop{ 0%,100%{opacity:0; transform:translateY(10px) scale(0.96);} 50%{opacity:1; transform:translateY(0) scale(1.02);} 70%{opacity:1; transform:translateY(0) scale(1);} }
+@keyframes ovBtnSlideUp{ from{opacity:0; transform:translateY(14px) scale(0.98);} to{opacity:1; transform:translateY(0) scale(1);} }
+@keyframes ovBtnSlideUpLoop{ 0%,100%{opacity:0; transform:translateY(14px) scale(0.98);} 50%{opacity:1; transform:translateY(0) scale(1);} 70%{opacity:1; transform:translateY(0) scale(1);} }
+@keyframes ovBtnGlow{ 0%,100%{ filter:drop-shadow(0 0 0 rgba(255,255,255,0)); } 50%{ filter:drop-shadow(0 0 16px rgba(255,255,255,0.45)); } }
+@keyframes ovBtnWiggle{ 0%,100%{ transform:rotate(0deg);} 20%{ transform:rotate(-1.8deg);} 40%{ transform:rotate(1.8deg);} 60%{ transform:rotate(-1.2deg);} 80%{ transform:rotate(1.2deg);} }
+@keyframes ovBtnBounce{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-6px);} }
+
+
+</style>
+
+<div id="bgCanvas"><canvas id="mainCanvas"></canvas></div>
+<div id="overlayLayer" aria-hidden="false"><div class="overlayWrap"><div id="overlayText" class="overlayText anim-text-float" style="color:#ffffff; font-size:44px;">Sacrisoft – Smart Software Solutions</div><div id="overlayCountdown" class="overlayCountdown anim-text-float" style="color:#ffffff; font-size:28px;"><span class="cdPrefix">Enter the Matrix in</span>82:05:38:56</div><a id="overlayButton" class="overlayButton btn-solid anim-btn-glow" href="mailto:earlyaccess@sacrisoft.com" target="_blank" rel="noopener noreferrer">Early access</a></div></div>
+<script>
+(function(){
+  const SETTINGS = {
+    endMs: 1780264800000,
+    total: 60,
+    fmt: "dhms",
+    prefix: "Enter the Matrix in",
+    loop: false,
+    revealTextAfter: false,
+    revealButtonAfter: false
+  };
+
+  function startIfReady(){
+    const cdEl = document.getElementById("overlayCountdown") || document.querySelector("#overlayLayer .overlayCountdown");
+    if(!cdEl) return false;
+    if(cdEl.__cdStarted) return true;
+    cdEl.__cdStarted = true;
+
+    const textEl = document.getElementById("overlayText");
+    const btnEl  = document.getElementById("overlayButton");
+
+    const endMs = SETTINGS.endMs;
+    const total = SETTINGS.total;
+    const fmt = SETTINGS.fmt;
+    const prefix = SETTINGS.prefix;
+    const loop = SETTINGS.loop;
+    const revealTextAfter = SETTINGS.revealTextAfter;
+    const revealButtonAfter = SETTINGS.revealButtonAfter;
+
+    function hideGated(){
+      if(revealTextAfter && textEl){ textEl.style.display = "none"; }
+      if(revealButtonAfter && btnEl){ btnEl.style.display = "none"; }
+    }
+    function revealGated(){
+      if(revealTextAfter && textEl){ textEl.style.display = "block"; }
+      if(revealButtonAfter && btnEl){ btnEl.style.display = "inline-flex"; }
+    }
+    hideGated();
+
+    function pad2(n){ return String(Math.max(0, n|0)).padStart(2,"0"); }
+    function format(sec){
+      const s = Math.max(0, sec|0);
+      const days = Math.floor(s / 86400);
+      const hours = Math.floor((s % 86400) / 3600);
+      const mins = Math.floor((s % 3600) / 60);
+      const secs = s % 60;
+      if(fmt === "ms"){ return pad2(Math.floor(s/60)) + ":" + pad2(secs); }
+      if(fmt === "dhms"){ return pad2(days) + ":" + pad2(hours) + ":" + pad2(mins) + ":" + pad2(secs); }
+      const hh = Math.floor(s / 3600);
+      return pad2(hh) + ":" + pad2(mins) + ":" + pad2(secs);
+    }
+
+    function esc(s){
+      return String(s).replace(/[&<>"']/g, (ch) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+    function render(rem){
+      const p = String(prefix||"").trim();
+      const txt = format(rem);
+      cdEl.innerHTML = p ? ('<span class="cdPrefix">' + esc(p) + '</span>' + esc(txt)) : esc(txt);
+    }
+
+    let baseDur = total;
+    let end = NaN;
+    if(typeof endMs === "number" && Number.isFinite(endMs)){
+      const diff = Math.ceil((endMs - Date.now())/1000);
+      if(diff > 0){
+        baseDur = Math.max(1, diff);
+        end = endMs;
+      } else {
+        end = NaN;
+      }
+    }
+    if(!Number.isFinite(end)){
+      baseDur = total;
+      end = Date.now() + total*1000;
+    }
+
+    let doneCalled = false;
+    function done(){
+      if(!doneCalled){
+        doneCalled = true;
+        revealGated();
+      }
+    }
+
+    let tid = 0;
+    function tick(){
+      let rem = Math.ceil((end - Date.now())/1000);
+      if(rem <= 0){
+        done();
+        if(loop){
+          end = Date.now() + baseDur*1000;
+          rem = Math.ceil((end - Date.now())/1000);
+        } else {
+          render(0);
+          if(tid) clearInterval(tid);
+          return;
+        }
+      }
+      render(rem);
+    }
+
+    tick();
+    tid = setInterval(tick, 250);
+    return true;
+  }
+
+  let tries = 0;
+  function retry(){
+    if(startIfReady()) return;
+    tries++;
+    if(tries < 200) setTimeout(retry, 50);
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", retry, { once:true });
+  }
+  retry();
+})();
+</script>
+<script>
+  const BG_ANIMATION_ENABLED = true;
+  const __raf = window.requestAnimationFrame.bind(window);
+  window.requestAnimationFrame = (cb) => BG_ANIMATION_ENABLED ? __raf(cb) : 0;
+  if(!BG_ANIMATION_ENABLED){ const w=document.getElementById("bgCanvas"); if(w) w.style.display="none"; }
+</script>
+<script>let canvas=document.getElementById("mainCanvas"),ctx=canvas.getContext("2d");
+const letters="アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*?";
+let palette=["#00aaff","#ffaa00","#ff55aa","#55ffaa"].filter(Boolean); if(!palette.length) palette=["#00ff00"];
+const bg="#000000";
+function hexToRgba(hex,a){
+  if(hex==="transparent") return "rgba(0,0,0,0)";
+  let s=String(hex||"#000000").replace("#","").trim();
+  if(s.length===3)s=s.split("").map(ch=>ch+ch).join("");
+  const n=parseInt(s,16);
+  const r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  return "rgba("+r+","+g+","+b+","+a+")";
+}
+let fontSize=Math.max(10,Math.min(40,23)),columns=0,drops=[],frame=0;
+function rebuild(){columns=Math.floor(canvas.width/fontSize);drops=new Array(columns).fill(0).map(()=>Math.floor(Math.random()*canvas.height/fontSize))}
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;fontSize=Math.max(10,Math.min(40,23));rebuild()}
+addEventListener("resize",resize);resize();
+function draw(){
+  frame++;
+  if(bg!=="transparent"){ctx.fillStyle=hexToRgba(bg,0.05);ctx.fillRect(0,0,canvas.width,canvas.height);}
+  else{ctx.clearRect(0,0,canvas.width,canvas.height);}
+  ctx.font=fontSize+"px monospace";
+  for(let i=0;i<drops.length;i++){
+    const ch=letters.charAt(Math.floor(Math.random()*letters.length));
+    const idx=(i+(frame>>3))%palette.length;
+    ctx.fillStyle=palette[idx];
+    ctx.fillText(ch,i*fontSize,drops[i]*fontSize);
+    drops[i]+=(0.5+Math.random())*1;
+    if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;
+  }
+  requestAnimationFrame(draw);
+}
+draw();</script>
+</body>
+</html>
